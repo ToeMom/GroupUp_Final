@@ -120,6 +120,14 @@ export default function AddEvent() {
     setLocation(selectedLocation);
   };
 
+  const validateNumberInput = (value: string): number | undefined => {
+    const num = Number(value);
+    if (isNaN(num)) return undefined;
+    if (num < 0) return undefined;
+    if (!Number.isInteger(num)) return undefined;
+    return num;
+  };
+
   const handleImageSelect = (file: File) => {
     const reader = new FileReader();
     reader.onload = () => {
@@ -135,6 +143,44 @@ export default function AddEvent() {
     e.preventDefault();
 
     let uploadedImageUrl: string | null = null;
+
+    
+
+    if (maxParticipants === undefined || maxParticipants < 1) {
+      toast({
+        title: "Neplatný počet účastníků",
+        description: "Zadejte nezáporné celé číslo",
+        variant: "destructive",
+      });
+      return;
+    }
+  
+    if (ageMin === undefined || ageMin < 0) {
+      toast({
+        title: "Neplatný minimální věk",
+        description: "Zadejte nezáporné celé číslo",
+        variant: "destructive",
+      });
+      return;
+    }
+  
+    if (ageMax === undefined || ageMax < 0) {
+      toast({
+        title: "Neplatný maximální věk",
+        description: "Zadejte nezáporné celé číslo",
+        variant: "destructive",
+      });
+      return;
+    }
+  
+    if (ageMin > ageMax) {
+      toast({
+        title: "Neplatný věkový rozsah",
+        description: "Minimální věk nesmí být větší než maximální",
+        variant: "destructive",
+      });
+      return;
+    }
 
     if (selectedFileName && image.startsWith("data:image/")) {
       const fileInput = document.getElementById("upload-image") as HTMLInputElement | null;
@@ -327,9 +373,10 @@ export default function AddEvent() {
                           type="number"
                           id="maxParticipants"
                           value={maxParticipants || ""}
-                          onChange={(e) =>
-                            setMaxParticipants(Number(e.target.value))
-                          }
+                          onChange={(e) => {
+                            const validated = validateNumberInput(e.target.value);
+                            setMaxParticipants(validated);
+                          }}
                           required
                           className="pl-10 bg-white"
                           placeholder="Napište počet účastníků"
@@ -441,7 +488,10 @@ export default function AddEvent() {
                             type="number"
                             id="ageMin"
                             value={ageMin || ""}
-                            onChange={(e) => setAgeMin(Number(e.target.value))}
+                            onChange={(e) => {
+                              const validated = validateNumberInput(e.target.value);
+                              setAgeMin(validated);
+                            }}
                             required
                             className="pl-10 bg-white"
                             placeholder="Min věk"
@@ -461,7 +511,10 @@ export default function AddEvent() {
                             type="number"
                             id="ageMax"
                             value={ageMax || ""}
-                            onChange={(e) => setAgeMax(Number(e.target.value))}
+                            onChange={(e) => {
+                              const validated = validateNumberInput(e.target.value);
+                              setAgeMax(validated);
+                            }}
                             required
                             className="pl-10 bg-white"
                             placeholder="Max věk"
