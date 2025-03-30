@@ -1,0 +1,21 @@
+overwrite: true
+schema: http://localhost:3000/api/graphql
+documents: "app/api/graphql/queries.graphql"
+hooks:
+  afterAllFileWrite:
+    - eslint --fix
+generates:
+  src/generated/graphql.tsx:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-react-apollo"
+    config:
+      scalars:
+        LocalDate: string
+        Base64String: string
+        BigDecimal: number
+        JSON: '{ [key: string]: any }'
+        Date: string
+        GraphQLBigInt: bigint
+        GraphQLStringOrFloat: string | number
